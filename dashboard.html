@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omnievo — Central de Inteligência Comercial & CRM B2B</title>
+    <!-- Favicon Oficial Omnievo Logo -->
+    <link rel="icon" type="image/svg+xml" href="logo-icon.svg">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Plus Jakarta Sans & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        omnievo: {
+                            50: '#F5F3FF',
+                            100: '#EDE9FE',
+                            500: '#7C3AED',
+                            600: '#6D28D9',
+                            700: '#5B21B6',
+                            900: '#3B0764',
+                            dark: '#080B11',
+                            panel: '#111827',
+                            border: '#1F2937'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #080B11; color: #F8FAFC; }
+        .glass-header { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+        .glass-card { background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.25s ease; }
+        .glass-card:hover { border-color: rgba(124, 58, 237, 0.4); box-shadow: 0 10px 30px -10px rgba(109, 40, 217, 0.25); }
+        .kanban-col { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; min-height: 520px; }
+        .kanban-card { background: #111827; border: 1px solid #1F2937; border-radius: 12px; transition: all 0.2s ease; }
+        .kanban-card:hover { border-color: #8B5CF6; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.25); }
+    </style>
+</head>
+<body class="h-full flex flex-col antialiased selection:bg-omnievo-600 selection:text-white">
+
+    <!-- FAIXA VIP DE MODO APRESENTAÇÃO -->
+    <div class="bg-gradient-to-r from-purple-950 via-indigo-950 to-slate-950 border-b border-purple-800/40 px-6 py-2 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-300">
+        <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span class="font-bold text-white tracking-wide">MODO DEMONSTRAÇÃO EXECUTIVA:</span>
+            <span class="text-amber-300 font-mono font-semibold">COSMÉTICOS, DERMOCOSMÉTICOS &amp; LINHA ESTÉTICA B2B</span>
+        </div>
+        <div class="flex items-center space-x-4 mt-1 sm:mt-0">
+            <div class="flex items-center space-x-2 bg-slate-900/80 px-2.5 py-1 rounded-lg border border-slate-800">
+                <span class="text-slate-400">Perfil:</span>
+                <select id="selectPerfil" onchange="alterarPerfilDemo(this.value)" class="bg-transparent text-purple-300 font-bold focus:outline-none cursor-pointer">
+                    <option value="master" class="bg-slate-900 text-white">👑 Diretor Comercial (Master)</option>
+                    <option value="vendedor" class="bg-slate-900 text-white">👔 Consultor Sênior (Gabriel Santos)</option>
+                </select>
+            </div>
+            <button onclick="resetarDadosDemo()" class="hover:text-white transition text-[11px] text-slate-400 flex items-center space-x-1" title="Restaurar dados iniciais">
+                <span>🔄 Resetar Dados</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- HEADER SUPERIOR DE NAVEGAÇÃO DA PLATAFORMA -->
+    <header class="glass-header sticky top-0 z-40 px-6 py-3.5">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            
+            <!-- LOGO E STATUS DO NO -->
+            <div class="flex items-center space-x-4">
+                <a href="index.html" class="flex items-center space-x-3 group">
+                    <img src="logo-icon.svg" alt="Omnievo Logo" class="w-9 h-9 group-hover:scale-105 transition transform duration-300">
+                    <div class="flex flex-col">
+                        <span class="text-xl font-extrabold tracking-tight text-white leading-none">OMNIEVO</span>
+                        <span class="text-[9px] font-mono text-purple-400 font-bold tracking-widest mt-0.5">CRM &amp; GESTÃO B2B</span>
+                    </div>
+                </a>
+
+                <div class="hidden md:flex items-center space-x-2 pl-4 border-l border-slate-800 text-xs font-mono">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="engineDisplay" class="text-slate-300 font-semibold">Omie ERP Direct Engine</span>
+                    <span class="text-slate-600">|</span>
+                    <span class="text-emerald-400 font-medium">Latência 0.2ms</span>
+                </div>
+            </div>
+
+            <!-- CONEXÃO DO USUÁRIO & AÇÕES -->
+            <div class="flex items-center space-x-4">
+                <div class="hidden sm:flex items-center space-x-3 bg-slate-900 border border-slate-800 px-3.5 py-1.5 rounded-xl text-xs">
+                    <div class="w-7 h-7 rounded-lg bg-omnievo-600 flex items-center justify-center font-bold text-white text-xs">
+                        👤
+                    </div>
+                    <div class="flex flex-col text-left">
+                        <span id="userDisplay" class="font-bold text-slate-200">gabriel.santos@omnievo.com.br</span>
+                        <span id="tenantDisplay" class="text-[10px] text-amber-400 font-mono font-semibold">TENANT: COSMÉTICOS &amp; DERMO B2B</span>
+                    </div>
+                </div>
+
+                <a href="https://wa.me/5571987563573?text=Ol%C3%A1!%20Gostaria%20de%20uma%20demonstra%C3%A7%C3%A3o%20do%20Omnievo%20CRM." target="_blank" class="hidden sm:flex text-xs font-semibold bg-emerald-950/60 hover:bg-emerald-900 text-emerald-300 border border-emerald-700/50 px-3.5 py-2 rounded-xl transition items-center space-x-1.5" title="Contato via WhatsApp">
+                    <span>💬 Suporte (71) 98756-3573</span>
+                </a>
+
+                <a href="login.html" class="text-xs font-semibold bg-slate-900 hover:bg-rose-950 text-slate-400 hover:text-rose-300 border border-slate-800 hover:border-rose-900/50 px-3.5 py-2 rounded-xl transition">
+                    🚪 Sair
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL DA PLATAFORMA (SIDEBAR + PAINEL) -->
+    <div class="flex-1 max-w-7xl w-full mx-auto p-6 grid lg:grid-cols-12 gap-6">
+        
+        <!-- SIDEBAR LATERAL (3 COLUNAS) -->
+        <aside class="lg:col-span-3 space-y-4">
+            
+            <!-- MENU DE MÓDULOS -->
+            <div class="glass-card p-3 rounded-2xl space-y-1">
+                <div class="text-[11px] font-mono uppercase tracking-wider text-slate-500 px-3 py-1.5">Módulos da Plataforma</div>
+                
+                <button onclick="switchTab('pedidos')" id="tab-btn-pedidos" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-omnievo-600 text-white font-semibold text-sm shadow-md transition">
+                    <div class="flex items-center space-x-3">
+                        <span>📋</span>
+                        <span>Pedidos &amp; Emissão</span>
+                    </div>
+                    <span class="text-xs font-mono bg-white/20 px-2 py-0.5 rounded-full" id="badgeTotalPedidos">10</span>
+                </button>
+
+                <button onclick="switchTab('kanban')" id="tab-btn-kanban" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 font-semibold text-sm transition">
+                    <div class="flex items-center space-x-3">
+                        <span>📊</span>
+                        <span>Kanban de Vendas</span>
+                    </div>
+                    <span class="text-xs font-mono text-purple-300 bg-purple-950/60 border border-purple-800/50 px-2 py-0.5 rounded-full">Pipeline</span>
+                </button>
+
+                <button onclick="switchTab('faturamento')" id="tab-btn-faturamento" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 font-semibold text-sm transition">
+                    <div class="flex items-center space-x-3">
+                        <span>📈</span>
+                        <span>Faturamento &amp; Metas</span>
+                    </div>
+                    <span class="text-xs font-mono text-emerald-400">91.5%</span>
+                </button>
+
+                <button onclick="switchTab('ranking')" id="tab-btn-ranking" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 font-semibold text-sm transition">
+                    <div class="flex items-center space-x-3">
+                        <span>🏆</span>
+                        <span>Pódio Vendedores</span>
+                    </div>
+                    <span class="text-xs font-mono text-amber-400">Ao Vivo</span>
+                </button>
+
+                <button onclick="switchTab('logistica')" id="tab-btn-logistica" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 font-semibold text-sm transition">
+                    <div class="flex items-center space-x-3">
+                        <span>🚚</span>
+                        <span>Logística &amp; Rastreio</span>
+                    </div>
+                    <span class="text-xs font-mono text-blue-400">Braspress</span>
+                </button>
+
+                <button onclick="switchTab('churn')" id="tab-btn-churn" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 font-semibold text-sm transition">
+                    <div class="flex items-center space-x-3">
+                        <span>🚨</span>
+                        <span>Radar de Churn (IA)</span>
+                    </div>
+                    <span class="text-xs font-mono bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded-full">3 Alertas</span>
+                </button>
+
+                <button onclick="switchTab('estoque')" id="tab-btn-estoque" class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 font-semibold text-sm transition">
+                    <div class="flex items-center space-x-3">
+                        <span>📦</span>
+                        <span>Estoque &amp; Validades</span>
+                    </div>
+                    <span class="text-xs font-mono bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full">FEFO OK</span>
+                </button>
+            </div>
+
+            <!-- CARD RÁPIDO AÇÃO FORÇA DE VENDAS -->
+            <div class="glass-card p-5 rounded-2xl border border-omnievo-600/30 text-left relative overflow-hidden">
+                <div class="text-xs font-mono text-purple-400 font-bold mb-1">EMISSÃO EXPRESSA</div>
+                <h4 class="text-sm font-bold text-white mb-2">Novo Pedido B2B</h4>
+                <p class="text-xs text-slate-400 mb-4 leading-relaxed">Selecione o cliente, calcule cubagem 3D e transmita ao Omie ERP em menos de 1 segundo.</p>
+                <button onclick="openNovoPedidoModal()" class="w-full bg-omnievo-600 hover:bg-omnievo-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-lg shadow-omnievo-600/25 transition flex items-center justify-center space-x-1.5">
+                    <span>➕ Criar Pedido Agora</span>
+                </button>
+            </div>
+
+            <!-- SUPORTE DEDICADO VIA WHATSAPP -->
+            <div class="glass-card p-4 rounded-2xl border border-emerald-500/20 text-left">
+                <div class="flex items-center space-x-2 text-xs font-mono text-emerald-400 font-bold mb-1">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span>SUPORTE DIRETO</span>
+                </div>
+                <p class="text-xs text-slate-300 font-medium mb-2.5">Central comercial e técnica via WhatsApp:</p>
+                <a href="https://wa.me/5571987563573?text=Ol%C3%A1!%20Gostaria%20de%20atendimento%20Omnievo." target="_blank" class="w-full bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 font-bold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center space-x-2">
+                    <span>💬 (71) 98756-3573</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- PAINEL CENTRAL MULTI-ABAS (9 COLUNAS) -->
+        <main class="lg:col-span-9 space-y-6">
+            
+            <!-- CARDS DE MÉTRICAS KPI GERAIS -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="glass-card p-4 rounded-2xl">
+                    <div class="text-xs text-slate-400 font-medium">Faturamento Mês</div>
+                    <div class="text-xl font-bold text-emerald-400 mt-1">R$ 548.920,00</div>
+                    <div class="text-[10px] text-emerald-300 mt-1 font-mono">▲ +22.4% vs mês ant.</div>
+                </div>
+
+                <div class="glass-card p-4 rounded-2xl">
+                    <div class="text-xs text-slate-400 font-medium">Líder do Pódio</div>
+                    <div class="text-xl font-bold text-amber-300 mt-1">🥇 Gabriel Santos</div>
+                    <div class="text-[10px] text-amber-400/80 mt-1 font-mono">R$ 194.850,00 (108% meta)</div>
+                </div>
+
+                <div class="glass-card p-4 rounded-2xl">
+                    <div class="text-xs text-slate-400 font-medium">Ticket Médio B2B</div>
+                    <div class="text-xl font-bold text-purple-300 mt-1">R$ 18.920,00</div>
+                    <div class="text-[10px] text-purple-400/80 mt-1 font-mono">142 frascos/pedido</div>
+                </div>
+
+                <div class="glass-card p-4 rounded-2xl">
+                    <div class="text-xs text-slate-400 font-medium">Economia Cubagem 3D</div>
+                    <div class="text-xl font-bold text-sky-400 mt-1">R$ 12.450,00</div>
+                    <div class="text-[10px] text-sky-300/80 mt-1 font-mono">Otimização de Caixas API</div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- ABA 1: PEDIDOS DE VENDA & EMISSÃO -->
+            <!-- ======================================================== -->
+            <div id="panel-pedidos" class="tab-panel space-y-4">
+                <div class="glass-card p-6 rounded-2xl space-y-4">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-slate-800 pb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                                <span>📋 Pedidos de Venda &amp; Sincronização ERP</span>
+                            </h3>
+                            <p class="text-xs text-slate-400">Emissão em lote, dedução de estoque instantânea e emissão de espelho em PDF</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="text" id="searchOrder" oninput="filterOrders(this.value)" placeholder="Buscar cliente, CNPJ ou pedido..." class="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white focus:outline-none focus:border-omnievo-600">
+                            <button onclick="openNovoPedidoModal()" class="bg-omnievo-600 hover:bg-omnievo-700 text-white text-xs font-bold px-3.5 py-1.5 rounded-xl transition shadow-md shadow-omnievo-600/25">
+                                + Novo Pedido
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TABELA DE PEDIDOS -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs font-sans">
+                            <thead class="text-[11px] font-mono text-slate-500 uppercase border-b border-slate-800">
+                                <tr>
+                                    <th class="pb-3">Código</th>
+                                    <th class="pb-3">Cliente B2B</th>
+                                    <th class="pb-3">UF</th>
+                                    <th class="pb-3">Valor Total</th>
+                                    <th class="pb-3">Status Omie ERP</th>
+                                    <th class="pb-3">Vendedor</th>
+                                    <th class="pb-3 text-right">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody" class="divide-y divide-slate-800/60 font-medium">
+                                <tr class="hover:bg-slate-900/40 transition">
+                                    <td class="py-3.5 font-mono text-purple-300 font-bold">#PED-9840</td>
+                                    <td class="py-3.5 font-bold text-slate-200">Drogaria Brasil &amp; Perfumaria Matriz</td>
+                                    <td class="py-3.5 font-mono text-slate-400">SP</td>
+                                    <td class="py-3.5 font-bold text-emerald-400">R$ 48.900,00</td>
+                                    <td class="py-3.5">
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                            60 - Faturado (Estoque Abatido)
+                                        </span>
+                                    </td>
+                                    <td class="py-3.5 text-slate-300">Gabriel Santos</td>
+                                    <td class="py-3.5 text-right">
+                                        <button onclick="gerarPDF('#PED-9840', 'Drogaria Brasil & Perfumaria Matriz', 'R$ 48.900,00')" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg transition font-mono text-[11px]">
+                                            📄 Espelho PDF
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-900/40 transition">
+                                    <td class="py-3.5 font-mono text-purple-300 font-bold">#PED-9841</td>
+                                    <td class="py-3.5 font-bold text-slate-200">Clínica Dermatológica Bella Pelle</td>
+                                    <td class="py-3.5 font-mono text-slate-400">RJ</td>
+                                    <td class="py-3.5 font-bold text-emerald-400">R$ 19.300,00</td>
+                                    <td class="py-3.5">
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                            60 - Faturado (Estoque Abatido)
+                                        </span>
+                                    </td>
+                                    <td class="py-3.5 text-slate-300">Gabriel Santos</td>
+                                    <td class="py-3.5 text-right">
+                                        <button onclick="gerarPDF('#PED-9841', 'Clínica Dermatológica Bella Pelle', 'R$ 19.300,00')" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg transition font-mono text-[11px]">
+                                            📄 Espelho PDF
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-900/40 transition">
+                                    <td class="py-3.5 font-mono text-purple-300 font-bold">#PED-9843</td>
+                                    <td class="py-3.5 font-bold text-slate-200">Rede Farmavida Medicamentos &amp; Cosméticos</td>
+                                    <td class="py-3.5 font-mono text-slate-400">MG</td>
+                                    <td class="py-3.5 font-bold text-amber-300">R$ 28.900,00</td>
+                                    <td class="py-3.5">
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                            70 - Separação Armazém
+                                        </span>
+                                    </td>
+                                    <td class="py-3.5 text-slate-300">Lucas Mendes</td>
+                                    <td class="py-3.5 text-right">
+                                        <button onclick="gerarPDF('#PED-9843', 'Rede Farmavida Medicamentos', 'R$ 28.900,00')" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg transition font-mono text-[11px]">
+                                            📄 Espelho PDF
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-900/40 transition">
+                                    <td class="py-3.5 font-mono text-purple-300 font-bold">#PED-9846</td>
+                                    <td class="py-3.5 font-bold text-slate-200">Dermacenter Produtos Dermatológicos</td>
+                                    <td class="py-3.5 font-mono text-slate-400">BA</td>
+                                    <td class="py-3.5 font-bold text-amber-300">R$ 22.400,00</td>
+                                    <td class="py-3.5">
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                                            20 - Análise Financeira Boleto
+                                        </span>
+                                    </td>
+                                    <td class="py-3.5 text-slate-300">Gabriel Santos</td>
+                                    <td class="py-3.5 text-right">
+                                        <button onclick="gerarPDF('#PED-9846', 'Dermacenter Salvador', 'R$ 22.400,00')" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg transition font-mono text-[11px]">
+                                            📄 Espelho PDF
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-900/40 transition">
+                                    <td class="py-3.5 font-mono text-purple-300 font-bold">#PED-9848</td>
+                                    <td class="py-3.5 font-bold text-slate-200">BioEstética Clínicas Integradas</td>
+                                    <td class="py-3.5 font-mono text-slate-400">GO</td>
+                                    <td class="py-3.5 font-bold text-sky-400">R$ 8.950,00</td>
+                                    <td class="py-3.5">
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                                            10 - Proposta em Negociação
+                                        </span>
+                                    </td>
+                                    <td class="py-3.5 text-slate-300">Rafael Costa</td>
+                                    <td class="py-3.5 text-right">
+                                        <button onclick="gerarPDF('#PED-9848', 'BioEstética Clínicas', 'R$ 8.950,00')" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg transition font-mono text-[11px]">
+                                            📄 Espelho PDF
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- ABA 2: KANBAN DE VENDAS (ESTILO TRELLO/OMNIEVO) -->
+            <!-- ======================================================== -->
+            <div id="panel-kanban" class="tab-panel hidden space-y-4">
+                <div class="flex justify-between items-center mb-2">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">📊 Kanban de Vendas &amp; Esteira de Pedidos</h3>
+                        <p class="text-xs text-slate-400">Acompanhamento visual em tempo real desde a proposta até o despacho da transportadora</p>
+                    </div>
+                    <span class="text-xs font-mono bg-purple-950 text-purple-300 border border-purple-800 px-3 py-1 rounded-lg">Total no Funil: R$ 254.900,00</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <!-- COLUNA 1 -->
+                    <div class="kanban-col p-4 space-y-3">
+                        <div class="flex justify-between items-center pb-2 border-b border-blue-500/40 text-blue-400 font-bold text-xs uppercase">
+                            <span>📝 10 - Proposta</span>
+                            <span class="bg-blue-500/20 px-2 py-0.5 rounded text-[10px]">2</span>
+                        </div>
+                        <div class="kanban-card p-3 space-y-2">
+                            <div class="flex justify-between text-[11px] font-mono text-purple-400 font-bold">
+                                <span>#PED-9848</span>
+                                <span class="text-slate-400 font-normal">GO</span>
+                            </div>
+                            <div class="text-xs font-bold text-white">BioEstética Clínicas</div>
+                            <div class="text-sm font-extrabold text-emerald-400">R$ 8.950,00</div>
+                            <div class="text-[10px] text-slate-400">👔 Rafael Costa • Sedex</div>
+                        </div>
+                        <div class="kanban-card p-3 space-y-2">
+                            <div class="flex justify-between text-[11px] font-mono text-purple-400 font-bold">
+                                <span>#PED-9849</span>
+                                <span class="text-slate-400 font-normal">PR</span>
+                            </div>
+                            <div class="text-xs font-bold text-white">Emporium Estética Curitiba</div>
+                            <div class="text-sm font-extrabold text-emerald-400">R$ 14.200,00</div>
+                            <div class="text-[10px] text-slate-400">👔 Camila Duarte • Braspress</div>
+                        </div>
+                    </div>
+
+                    <!-- COLUNA 2 -->
+                    <div class="kanban-col p-4 space-y-3">
+                        <div class="flex justify-between items-center pb-2 border-b border-amber-500/40 text-amber-400 font-bold text-xs uppercase">
+                            <span>⏳ 20 - Financeiro</span>
+                            <span class="bg-amber-500/20 px-2 py-0.5 rounded text-[10px]">2</span>
+                        </div>
+                        <div class="kanban-card p-3 space-y-2 border-l-2 border-amber-500">
+                            <div class="flex justify-between text-[11px] font-mono text-purple-400 font-bold">
+                                <span>#PED-9846</span>
+                                <span class="text-slate-400 font-normal">BA</span>
+                            </div>
+                            <div class="text-xs font-bold text-white">Dermacenter Salvador</div>
+                            <div class="text-sm font-extrabold text-emerald-400">R$ 22.400,00</div>
+                            <div class="text-[10px] text-amber-400">● Análise Boleto 30/45d</div>
+                        </div>
+                        <div class="kanban-card p-3 space-y-2 border-l-2 border-amber-500">
+                            <div class="flex justify-between text-[11px] font-mono text-purple-400 font-bold">
+                                <span>#PED-9847</span>
+                                <span class="text-slate-400 font-normal">SP</span>
+                            </div>
+                            <div class="text-xs font-bold text-white">Drogaria Brasil Matriz</div>
+                            <div class="text-sm font-extrabold text-emerald-400">R$ 38.600,00</div>
+                            <div class="text-[10px] text-emerald-400">● Score Serasa 840 OK</div>
+                        </div>
+                    </div>
+
+                    <!-- COLUNA 3 -->
+                    <div class="kanban-col p-4 space-y-3">
+                        <div class="flex justify-between items-center pb-2 border-b border-purple-500/40 text-purple-400 font-bold text-xs uppercase">
+                            <span>📦 70 - Separação</span>
+                            <span class="bg-purple-500/20 px-2 py-0.5 rounded text-[10px]">3</span>
+                        </div>
+                        <div class="kanban-card p-3 space-y-2 border-l-2 border-purple-500">
+                            <div class="flex justify-between text-[11px] font-mono text-purple-400 font-bold">
+                                <span>#PED-9843</span>
+                                <span class="text-slate-400 font-normal">MG</span>
+                            </div>
+                            <div class="text-xs font-bold text-white">Rede Farmavida MG</div>
+                            <div class="text-sm font-extrabold text-emerald-400">R$ 28.900,00</div>
+                            <div class="text-[10px] text-purple-300">📦 3x Caixa Master G</div>
+                        </div>
+                        <div class="kanban-card p-3 space-y-2 border-l-2 border-purple-500">
+                            <div class="flex justify-between text-[11px] font-mono text-purple-400 font-bold">
+                                <span>#PED-9844</span>
+                                <span class="text-slate-400 font-normal">ES</span>
+                            </div>
+                            <div class="text-xs font-bold text-white">Cosméticos &amp; Cia ES</div>
+                            <div class="text-sm font-extrabold text-emerald-400">R$ 17.500,00</div>
+                            <div class="text-[10px] text-purple-300">📦 2x Caixa Padrão P</div>
+                        </div>
+                        <div class="kanban-card p-3 space-y-2 border-l-2 border-purple-500">
+                            <div class="flex justify-between text-[11px] font-mono text-purple-400 font-bold">
+                                <span>#PED-9845</span>
+                                <span class="text-slate-400 font-normal">RS</span>
+                            </div>
+                            <div class="text-xs font-bold text-white">FarmaSul Distribuição</div>
+                            <div class="text-sm font-extrabold text-emerald-400">R$ 31.250,00</div>
+                            <div class="text-[10px] text-purple-300">📦 Convocada Braspress</div>
+                        </div>
+                    </div>
+
+                    <!-- COLUNA 4 -->
+                    <div class="kanban-col p-4 space-y-3">
+                        <div class="flex justify-between items-center pb-2 border-b border-emerald-500/40 text-emerald-400 font-bold text-xs uppercase">
+                            <span>🚚 50/60 - Faturado</span>
+                            <span class="bg-emerald-500/20 px-2 py-0.5 rounded text-[10px]">3</span>
+                        </div>
+                        <div class="kanban-card p-3 space-y-2 border-l-2 border-emerald-500">
+                            <div class="flex justify-between text-[11px] font-mono text-purple-400 font-bold">
+                                <span>#PED-9840</span>
+                                <span class="text-slate-400 font-normal">SP</span>
+                            </div>
+                            <div class="text-xs font-bold text-white">Drogaria Brasil Matriz</div>
+                            <div class="text-sm font-extrabold text-emerald-400">R$ 48.900,00</div>
+                            <div class="text-[10px] text-blue-400">🚚 Braspress CTE-84920</div>
+                        </div>
+                        <div class="kanban-card p-3 space-y-2 border-l-2 border-emerald-500">
+                            <div class="flex justify-between text-[11px] font-mono text-purple-400 font-bold">
+                                <span>#PED-9841</span>
+                                <span class="text-slate-400 font-normal">RJ</span>
+                            </div>
+                            <div class="text-xs font-bold text-white">Clínica Bella Pelle</div>
+                            <div class="text-sm font-extrabold text-emerald-400">R$ 19.300,00</div>
+                            <div class="text-[10px] text-emerald-400">✅ Entregue com Sucesso</div>
+                        </div>
+                        <div class="kanban-card p-3 space-y-2 border-l-2 border-emerald-500">
+                            <div class="flex justify-between text-[11px] font-mono text-purple-400 font-bold">
+                                <span>#PED-9842</span>
+                                <span class="text-slate-400 font-normal">MG</span>
+                            </div>
+                            <div class="text-xs font-bold text-white">Rede Farmavida MG</div>
+                            <div class="text-sm font-extrabold text-emerald-400">R$ 52.800,00</div>
+                            <div class="text-[10px] text-emerald-400">✅ Entregue com Sucesso</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- ABA 3: DASHBOARD DE FATURAMENTO & METAS -->
+            <!-- ======================================================== -->
+            <div id="panel-faturamento" class="tab-panel hidden space-y-4">
+                <div class="glass-card p-6 rounded-2xl space-y-6">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-white">📈 Evolução de Vendas B2B vs B2C</h3>
+                            <p class="text-xs text-slate-400">Faturamento diário auditado com expurgo automático de bonificações</p>
+                        </div>
+                        <div class="flex items-center space-x-3 text-xs font-mono">
+                            <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded bg-purple-600"></span><span class="text-slate-300">Corporativo B2B</span></span>
+                            <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded bg-sky-400"></span><span class="text-slate-300">E-commerce B2C</span></span>
+                        </div>
+                    </div>
+
+                    <!-- GRÁFICO DIÁRIO SIMULADO EM BARRAS CSS -->
+                    <div class="space-y-3">
+                        <div class="text-xs font-mono text-slate-400">Faturamento dos Últimos 7 Dias (em Milhares de Reais):</div>
+                        <div class="grid grid-cols-7 gap-3 h-48 items-end pt-6 bg-slate-900/40 p-4 rounded-xl border border-slate-800">
+                            <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+                                <div class="text-[10px] font-mono text-purple-300">R$ 52k</div>
+                                <div class="w-full bg-purple-600 rounded-t-lg h-[65%]"></div>
+                                <div class="text-[10px] text-slate-400 font-mono">07/11</div>
+                            </div>
+                            <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+                                <div class="text-[10px] font-mono text-purple-300">R$ 64k</div>
+                                <div class="w-full bg-purple-600 rounded-t-lg h-[80%]"></div>
+                                <div class="text-[10px] text-slate-400 font-mono">08/11</div>
+                            </div>
+                            <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+                                <div class="text-[10px] font-mono text-purple-300">R$ 38k</div>
+                                <div class="w-full bg-purple-600 rounded-t-lg h-[48%]"></div>
+                                <div class="text-[10px] text-slate-400 font-mono">09/11</div>
+                            </div>
+                            <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+                                <div class="text-[10px] font-mono text-purple-300">R$ 58k</div>
+                                <div class="w-full bg-purple-600 rounded-t-lg h-[72%]"></div>
+                                <div class="text-[10px] text-slate-400 font-mono">10/11</div>
+                            </div>
+                            <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+                                <div class="text-[10px] font-mono text-purple-300">R$ 71k</div>
+                                <div class="w-full bg-purple-600 rounded-t-lg h-[90%]"></div>
+                                <div class="text-[10px] text-slate-400 font-mono">11/11</div>
+                            </div>
+                            <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+                                <div class="text-[10px] font-mono text-purple-300">R$ 49k</div>
+                                <div class="w-full bg-purple-600 rounded-t-lg h-[62%]"></div>
+                                <div class="text-[10px] text-slate-400 font-mono">12/11</div>
+                            </div>
+                            <div class="flex flex-col items-center gap-1.5 h-full justify-end">
+                                <div class="text-[10px] font-mono text-emerald-400 font-bold">R$ 82k</div>
+                                <div class="w-full bg-emerald-500 rounded-t-lg h-[100%] shadow-lg shadow-emerald-500/20"></div>
+                                <div class="text-[10px] text-emerald-400 font-bold font-mono">Hoje</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PACING DE METAS -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+                            <div class="flex justify-between text-xs">
+                                <span class="font-bold text-slate-300">Pacing Comercial do Mês</span>
+                                <span class="text-emerald-400 font-mono font-bold">91.5% (R$ 548.920 / R$ 600.000)</span>
+                            </div>
+                            <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
+                                <div class="bg-gradient-to-r from-purple-500 to-emerald-400 h-full w-[91.5%]"></div>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Previsão de fechamento estimada em R$ 642.000 (+7% acima da meta).</p>
+                        </div>
+
+                        <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+                            <div class="flex justify-between text-xs">
+                                <span class="font-bold text-slate-300">Divisão de Faturamento por Canal</span>
+                                <span class="text-purple-300 font-mono font-bold">88% B2B | 12% B2C</span>
+                            </div>
+                            <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden flex">
+                                <div class="bg-purple-600 h-full w-[88%]"></div>
+                                <div class="bg-sky-400 h-full w-[12%]"></div>
+                            </div>
+                            <p class="text-[11px] text-slate-400">Alta concentração no canal corporativo farmacêutico e multimarcas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- ABA 4: PÓDIO DOS VENDEDORES (GAMIFICAÇÃO) -->
+            <!-- ======================================================== -->
+            <div id="panel-ranking" class="tab-panel hidden space-y-4">
+                <div class="flex justify-between items-center mb-2">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">🏆 Pódio dos Vendedores &amp; Ranking Comercial</h3>
+                        <p class="text-xs text-slate-400">Métricas individuais atualizadas a cada pedido faturado no Omie ERP</p>
+                    </div>
+                    <span class="text-xs font-mono bg-amber-500/10 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-lg">Mês Vigente</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <!-- 1º LUGAR -->
+                    <div class="glass-card p-6 rounded-2xl border-2 border-amber-500/80 text-center relative overflow-hidden bg-gradient-to-b from-amber-500/10 to-slate-900">
+                        <div class="text-4xl mb-2">🥇</div>
+                        <h4 class="text-lg font-black text-amber-300">Gabriel Santos</h4>
+                        <p class="text-xs text-slate-400">Consultor Sênior São Paulo / Sudeste</p>
+                        <div class="text-2xl font-black text-emerald-400 mt-4 font-mono">R$ 194.850,00</div>
+                        <div class="text-xs text-amber-400 font-bold mt-1">108.2% da Meta (R$ 180.000)</div>
+                        <div class="mt-4 pt-3 border-t border-slate-800 text-xs text-slate-300 flex justify-between">
+                            <span>48 Pedidos</span>
+                            <span class="font-bold text-emerald-400">Comissão: R$ 7.794,00</span>
+                        </div>
+                    </div>
+
+                    <!-- 2º LUGAR -->
+                    <div class="glass-card p-6 rounded-2xl border-2 border-slate-400/60 text-center relative overflow-hidden bg-gradient-to-b from-slate-400/10 to-slate-900">
+                        <div class="text-4xl mb-2">🥈</div>
+                        <h4 class="text-lg font-black text-slate-200">Lucas Mendes</h4>
+                        <p class="text-xs text-slate-400">Representante MG &amp; Espírito Santo</p>
+                        <div class="text-2xl font-black text-emerald-400 mt-4 font-mono">R$ 168.420,00</div>
+                        <div class="text-xs text-slate-300 font-bold mt-1">99.1% da Meta (R$ 170.000)</div>
+                        <div class="mt-4 pt-3 border-t border-slate-800 text-xs text-slate-300 flex justify-between">
+                            <span>41 Pedidos</span>
+                            <span class="font-bold text-emerald-400">Comissão: R$ 6.736,80</span>
+                        </div>
+                    </div>
+
+                    <!-- 3º LUGAR -->
+                    <div class="glass-card p-6 rounded-2xl border-2 border-amber-700/60 text-center relative overflow-hidden bg-gradient-to-b from-amber-800/10 to-slate-900">
+                        <div class="text-4xl mb-2">🥉</div>
+                        <h4 class="text-lg font-black text-amber-600">Camila Duarte</h4>
+                        <p class="text-xs text-slate-400">Representante Sul (PR / SC / RS)</p>
+                        <div class="text-2xl font-black text-emerald-400 mt-4 font-mono">R$ 138.900,00</div>
+                        <div class="text-xs text-amber-500 font-bold mt-1">92.6% da Meta (R$ 150.000)</div>
+                        <div class="mt-4 pt-3 border-t border-slate-800 text-xs text-slate-300 flex justify-between">
+                            <span>34 Pedidos</span>
+                            <span class="font-bold text-emerald-400">Comissão: R$ 5.556,00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- ABA 5: LOGÍSTICA & TORRE DE CONTROLE -->
+            <!-- ======================================================== -->
+            <div id="panel-logistica" class="tab-panel hidden space-y-4">
+                <div class="glass-card p-6 rounded-2xl space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-white">🚚 Torre de Controle Logística &amp; Rastreamento</h3>
+                            <p class="text-xs text-slate-400">Integração nativa de cotação e tracking com Braspress, SSW e Sedex</p>
+                        </div>
+                        <span class="text-xs font-mono text-emerald-400 bg-emerald-950 px-3 py-1 rounded-lg border border-emerald-800">100% Cargas no Prazo</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs font-sans">
+                            <thead class="text-[11px] font-mono text-slate-500 uppercase border-b border-slate-800">
+                                <tr>
+                                    <th class="pb-3">CTE / Rastreio</th>
+                                    <th class="pb-3">Transportadora</th>
+                                    <th class="pb-3">Destinatário &amp; Cidade</th>
+                                    <th class="pb-3">Cubagem Calculada</th>
+                                    <th class="pb-3">Status de Entrega</th>
+                                    <th class="pb-3 text-right">Previsão</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/60 font-medium">
+                                <tr>
+                                    <td class="py-3.5 font-mono text-purple-300 font-bold">CTE-84920</td>
+                                    <td class="py-3.5 font-bold text-slate-200">Braspress Rodoviário</td>
+                                    <td class="py-3.5 text-slate-300">Drogaria Brasil (São Paulo - SP)</td>
+                                    <td class="py-3.5 text-purple-300 font-mono">12x Caixa Master G</td>
+                                    <td class="py-3.5"><span class="bg-blue-500/20 text-blue-300 px-2.5 py-1 rounded-full text-[10px] font-mono">Em Trânsito (Rota SP)</span></td>
+                                    <td class="py-3.5 text-right font-mono text-slate-300">Amanhã 14h</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3.5 font-mono text-purple-300 font-bold">CTE-84918</td>
+                                    <td class="py-3.5 font-bold text-slate-200">SSW Transportes</td>
+                                    <td class="py-3.5 text-slate-300">Clínica Bella Pelle (Rio de Janeiro - RJ)</td>
+                                    <td class="py-3.5 text-purple-300 font-mono">4x Caixa Padrão P</td>
+                                    <td class="py-3.5"><span class="bg-amber-500/20 text-amber-300 px-2.5 py-1 rounded-full text-[10px] font-mono">Saiu para Entrega</span></td>
+                                    <td class="py-3.5 text-right font-mono text-slate-300">Hoje até 18h</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3.5 font-mono text-purple-300 font-bold">CTE-84915</td>
+                                    <td class="py-3.5 font-bold text-slate-200">Braspress Rodoviário</td>
+                                    <td class="py-3.5 text-slate-300">Rede Farmavida (Belo Horizonte - MG)</td>
+                                    <td class="py-3.5 text-purple-300 font-mono">18x Caixa Master G</td>
+                                    <td class="py-3.5"><span class="bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded-full text-[10px] font-mono">Entregue com Sucesso</span></td>
+                                    <td class="py-3.5 text-right font-mono text-emerald-400">Finalizado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- ABA 6: RADAR DE CHURN & RECOMPRA IA -->
+            <!-- ======================================================== -->
+            <div id="panel-churn" class="tab-panel hidden space-y-4">
+                <div class="glass-card p-6 rounded-2xl space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-white">🚨 Radar de Clientes &amp; Alerta de Churn (IA)</h3>
+                            <p class="text-xs text-slate-400">Detecção preditiva de clientes cujo ciclo de reposição venceu</p>
+                        </div>
+                        <span class="text-xs font-mono text-rose-400 bg-rose-950 px-3 py-1 rounded-lg border border-rose-800">3 Oportunidades de Resgate</span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="p-4 rounded-xl bg-slate-900 border border-rose-900/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                            <div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-mono font-bold">CHURN CRÍTICO (74 DIAS)</span>
+                                    <h5 class="text-sm font-bold text-white">BioEstética Clínicas Integradas (Goiânia - GO)</h5>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1">Costuma comprar a cada 25 dias. Produtos favoritos: Peeling Mandélico &amp; Sérum Vitamina C.</p>
+                            </div>
+                            <a href="https://wa.me/5571987563573?text=Ol%C3%A1%20Dra.%20Juliana!%20Notamos%20que%20seu%20estoque%20da%20BioEst%C3%A9tica%20est%C3%A1%20no%20ciclo%20de%20reposi%C3%A7%C3%A3o.%20Liberamos%20condi%C3%A7%C3%A3o%20especial%20de%2042%20dias%20no%20boleto%20sem%20juros%20com%20frete%20cortesia!" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center space-x-1.5 shrink-0">
+                                <span>💬 Reativar no WhatsApp</span>
+                            </a>
+                        </div>
+
+                        <div class="p-4 rounded-xl bg-slate-900 border border-amber-900/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                            <div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-mono font-bold">ALERTA RECOMPRA (48 DIAS)</span>
+                                    <h5 class="text-sm font-bold text-white">Emporium Estética &amp; Spa Curitiba (Curitiba - PR)</h5>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-1">Ciclo habitual de 30 dias. Ticket médio de R$ 18.200,00.</p>
+                            </div>
+                            <a href="https://wa.me/5571987563573?text=Ol%C3%A1!%20Temos%20novos%20lotes%20de%20Kit%20Cabine%20Est%C3%A9tica%20dispon%C3%ADveis%20com%20desconto%20para%20a%20Emporium%20Est%C3%A9tica!" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center space-x-1.5 shrink-0">
+                                <span>💬 Reativar no WhatsApp</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- ABA 7: ESTOQUE & VALIDADES (FEFO) -->
+            <!-- ======================================================== -->
+            <div id="panel-estoque" class="tab-panel hidden space-y-4">
+                <div class="glass-card p-6 rounded-2xl space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-white">📦 Estoque, Lotes e Validades (FEFO)</h3>
+                            <p class="text-xs text-slate-400">Controle rigoroso de cosméticos e tratamentos estéticos sincronizado com o ERP</p>
+                        </div>
+                        <span class="text-xs font-mono text-emerald-400 bg-emerald-950 px-3 py-1 rounded-lg border border-emerald-800">12 SKUs Ativos</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs font-sans">
+                            <thead class="text-[11px] font-mono text-slate-500 uppercase border-b border-slate-800">
+                                <tr>
+                                    <th class="pb-3">SKU</th>
+                                    <th class="pb-3">Descrição do Dermocosmético</th>
+                                    <th class="pb-3">Preço Atacado</th>
+                                    <th class="pb-3">Saldo Disponível</th>
+                                    <th class="pb-3">Lote</th>
+                                    <th class="pb-3">Validade</th>
+                                    <th class="pb-3 text-right">Caixa</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/60 font-medium">
+                                <tr>
+                                    <td class="py-3 font-mono text-purple-300 font-bold">SKU-101</td>
+                                    <td class="py-3 text-white font-bold">Sérum Clareador Vitamina C 15% (30ml)</td>
+                                    <td class="py-3 font-mono text-emerald-400">R$ 68,50</td>
+                                    <td class="py-3 font-mono text-slate-200">1.250 un</td>
+                                    <td class="py-3 font-mono text-slate-400">L2608</td>
+                                    <td class="py-3 font-mono text-emerald-400">11/2027</td>
+                                    <td class="py-3 text-right font-mono text-slate-400">Caixa P</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 font-mono text-purple-300 font-bold">SKU-102</td>
+                                    <td class="py-3 text-white font-bold">Protetor Solar Fluido Toque Seco FPS 70 (50ml)</td>
+                                    <td class="py-3 font-mono text-emerald-400">R$ 54,90</td>
+                                    <td class="py-3 font-mono text-slate-200">2.180 un</td>
+                                    <td class="py-3 font-mono text-slate-400">L2612</td>
+                                    <td class="py-3 font-mono text-emerald-400">03/2028</td>
+                                    <td class="py-3 text-right font-mono text-slate-400">Caixa P</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 font-mono text-purple-300 font-bold">SKU-103</td>
+                                    <td class="py-3 text-white font-bold">Ácido Hialurônico Concentrado Filler (30ml)</td>
+                                    <td class="py-3 font-mono text-emerald-400">R$ 79,00</td>
+                                    <td class="py-3 font-mono text-slate-200">890 un</td>
+                                    <td class="py-3 font-mono text-slate-400">L2603</td>
+                                    <td class="py-3 font-mono text-emerald-400">09/2027</td>
+                                    <td class="py-3 text-right font-mono text-slate-400">Caixa P</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 font-mono text-purple-300 font-bold">SKU-105</td>
+                                    <td class="py-3 text-white font-bold">Creme Reparador Noturno Retinol Puro 0.3% (50g)</td>
+                                    <td class="py-3 font-mono text-emerald-400">R$ 94,00</td>
+                                    <td class="py-3 font-mono text-amber-400 font-bold">380 un (Reposição)</td>
+                                    <td class="py-3 font-mono text-slate-400">L2601</td>
+                                    <td class="py-3 font-mono text-amber-400">08/2027</td>
+                                    <td class="py-3 text-right font-mono text-slate-400">Caixa P</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 font-mono text-purple-300 font-bold">SKU-111</td>
+                                    <td class="py-3 text-white font-bold">Kit Cabine Estética DermoClean (5 Itens)</td>
+                                    <td class="py-3 font-mono text-emerald-400">R$ 385,00</td>
+                                    <td class="py-3 font-mono text-slate-200">140 un</td>
+                                    <td class="py-3 font-mono text-slate-400">L2615</td>
+                                    <td class="py-3 font-mono text-emerald-400">06/2028</td>
+                                    <td class="py-3 text-right font-mono text-slate-400">Caixa G</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL NOVO PEDIDO INTUITIVO COM CUBAGEM 3D -->
+    <div id="novoPedidoModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4">
+        <div class="bg-slate-900 rounded-3xl border border-slate-800 max-w-xl w-full p-8 text-left relative space-y-5 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+                <div>
+                    <h4 class="text-base font-bold text-white flex items-center gap-2">
+                        <span>🛍️ Emissão Expressa de Pedido B2B</span>
+                    </h4>
+                    <p class="text-xs text-slate-400 mt-0.5">Sincronização instantânea com Omie ERP (Estoque, Fiscal &amp; Frete)</p>
+                </div>
+                <button onclick="closeNovoPedidoModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
+            </div>
+            
+            <form onsubmit="adicionarNovoPedido(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold uppercase tracking-wider text-slate-300 mb-1.5">Cliente Corporativo</label>
+                    <select id="novoCliente" required class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-omnievo-500 font-medium">
+                        <option value="Drogaria Brasil &amp; Perfumaria Matriz">Drogaria Brasil &amp; Perfumaria Matriz (SP) — Limite R$ 80.000</option>
+                        <option value="Clínica Dermatológica Bella Pelle">Clínica Dermatológica Bella Pelle (RJ) — Limite R$ 50.000</option>
+                        <option value="Rede Farmavida Medicamentos">Rede Farmavida Medicamentos (MG) — Limite R$ 120.000</option>
+                        <option value="Cosméticos &amp; Cia Atacadista do ES">Cosméticos &amp; Cia Atacadista (ES) — Limite R$ 90.000</option>
+                        <option value="FarmaSul Distribuidora Integrada">FarmaSul Distribuidora (RS) — Limite R$ 110.000</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold uppercase tracking-wider text-slate-300 mb-1.5">Produto / Lote em Estoque</label>
+                    <select id="novoProdutoSelect" onchange="atualizarPrecoProduto(this.value)" required class="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-omnievo-500 font-medium">
+                        <option value="16440.00">Lote 240x Sérum Clareador Vitamina C 15% (R$ 16.440,00)</option>
+                        <option value="19764.00">Lote 360x Protetor Solar Fluido Toque Seco FPS 70 (R$ 19.764,00)</option>
+                        <option value="14220.00">Lote 180x Ácido Hialurônico Filler Concentrado (R$ 14.220,00)</option>
+                        <option value="15390.00">Lote 40x Kit Cabine Estética Profissional DermoClean (R$ 15.390,00)</option>
+                    </select>
+                </div>
+                
+                <!-- CUBAGEM 3D CALCULADA -->
+                <div class="p-3.5 rounded-xl bg-purple-950/40 border border-purple-800/40 space-y-1">
+                    <div class="flex justify-between items-center text-xs font-bold text-purple-300">
+                        <span>📦 Cubagem &amp; Frete Braspress:</span>
+                        <span class="text-emerald-400 font-mono">Frete CIF Cortesia</span>
+                    </div>
+                    <div class="text-[11px] text-slate-300">
+                        Otimização de Embalagem: <b class="text-amber-300">2x Caixas Master Padrão G</b> (Peso Aferido: 28,4 kg)
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-bold uppercase tracking-wider text-slate-300 mb-1.5">Valor Total Faturado</label>
+                        <input type="text" id="novoValor" value="16.440,00" required readonly class="w-full px-4 py-3 rounded-xl bg-slate-800/60 border border-slate-700 text-emerald-400 font-bold font-mono focus:outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block font-bold uppercase tracking-wider text-slate-300 mb-1.5">Validação Fiscal &amp; ST</label>
+                        <div class="px-4 py-3 rounded-xl bg-slate-800/60 border border-slate-700 text-emerald-300 text-xs font-semibold flex items-center space-x-1.5">
+                            <span>✓ ICMS-ST 100% Homologado</span>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" id="btnEmitirPedidoModal" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold py-3.5 rounded-xl shadow-lg shadow-emerald-500/20 transition duration-200 text-sm flex items-center justify-center space-x-2">
+                    <span>🚀 Transmitir ao Omie ERP em 0.4s</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL ESPELHO EM PDF EXECUTIVO (PROFISSIONAL) -->
+    <div id="pdfModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-8 text-slate-900 relative shadow-2xl space-y-6 text-left">
+            <div class="flex justify-between items-start border-b border-slate-200 pb-4">
+                <div class="flex items-center space-x-3">
+                    <img src="logo-icon.svg" alt="Omnievo" class="w-10 h-10">
+                    <div>
+                        <div class="text-xl font-black text-slate-900 leading-tight">OMNIEVO</div>
+                        <div class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Espelho Executivo de Pedido B2B</div>
+                    </div>
+                </div>
+                <button onclick="closePdfModal()" class="text-slate-400 hover:text-slate-700 text-xl font-bold">✕</button>
+            </div>
+
+            <!-- DADOS DO PEDIDO -->
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 grid grid-cols-2 gap-4 text-xs">
+                <div>
+                    <span class="text-slate-500 font-semibold">Número do Pedido:</span>
+                    <div class="font-mono font-black text-slate-900 text-base" id="pdfPedidoNum">#PED-9840</div>
+                </div>
+                <div>
+                    <span class="text-slate-500 font-semibold">Protocolo Omie ERP:</span>
+                    <div class="font-mono font-bold text-emerald-600">OMIE-SYNC-ACTIVE-01</div>
+                </div>
+                <div>
+                    <span class="text-slate-500 font-semibold">Cliente B2B:</span>
+                    <div class="font-bold text-slate-900" id="pdfClienteNome">Drogaria Brasil &amp; Perfumaria Matriz</div>
+                </div>
+                <div>
+                    <span class="text-slate-500 font-semibold">Status de Faturamento:</span>
+                    <div class="font-bold text-emerald-600">60 - Faturado (Estoque Abatido)</div>
+                </div>
+            </div>
+
+            <!-- ITENS DO PEDIDO -->
+            <div class="border border-slate-100 rounded-2xl overflow-hidden text-xs">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-100 text-slate-600 font-bold">
+                        <tr>
+                            <th class="p-3">Item / Lote</th>
+                            <th class="p-3 text-center">Qtd</th>
+                            <th class="p-3 text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100" id="pdfItensTable">
+                        <tr>
+                            <td class="p-3 font-medium">Lote 240x Sérum Clareador Vitamina C 15% (30ml)</td>
+                            <td class="p-3 text-center font-mono">1 lote</td>
+                            <td class="p-3 text-right font-bold text-slate-900 font-mono" id="pdfTotalValor">R$ 16.440,00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- BOTÕES DE AÇÃO DO PDF -->
+            <div class="flex space-x-3 pt-2">
+                <button onclick="window.print()" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center space-x-2">
+                    <span>🖨️ Imprimir Pedido</span>
+                </button>
+                <button onclick="compartilharWhatsApp()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center space-x-2 shadow-md shadow-emerald-500/20">
+                    <span>📲 Enviar via WhatsApp</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST DE NOTIFICAÇÃO DA PLATAFORMA -->
+    <div id="dashToast" class="fixed top-6 right-6 z-50 transform transition-all duration-300 translate-y-[-100px] opacity-0 pointer-events-none">
+        <div class="bg-slate-900 border border-emerald-500/50 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-3">
+            <span class="text-xl">✅</span>
+            <div class="text-xs">
+                <div class="font-bold text-emerald-400" id="dashToastTitle">Sucesso!</div>
+                <div class="text-slate-300" id="dashToastMsg">Pedido transmitido ao Omie ERP.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE INTERATIVIDADE DO DASHBOARD -->
+    <script>
+        let currentPdfData = { num: '#PED-9840', cliente: 'Drogaria Brasil & Perfumaria Matriz', valor: 'R$ 48.900,00' };
+
+        // Alternar Abas com Feedback Visual
+        function switchTab(tabId) {
+            // Ocultar todos os painéis
+            const panels = document.querySelectorAll('.tab-panel');
+            panels.forEach(p => p.classList.add('hidden'));
+
+            // Exibir o painel selecionado
+            const targetPanel = document.getElementById('panel-' + tabId);
+            if (targetPanel) {
+                targetPanel.classList.remove('hidden');
+            }
+
+            // Atualizar classes dos botões da sidebar
+            const buttons = document.querySelectorAll('aside button');
+            buttons.forEach(btn => {
+                if (btn.id === 'tab-btn-' + tabId) {
+                    btn.className = 'w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-omnievo-600 text-white font-semibold text-sm shadow-md transition';
+                } else if (btn.id.startsWith('tab-btn-')) {
+                    btn.className = 'w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 font-semibold text-sm transition';
+                }
+            });
+
+            showDashToast('Módulo Selecionado', 'Navegando para: ' + tabId.toUpperCase());
+        }
+
+        function alterarPerfilDemo(val) {
+            const userEl = document.getElementById('userDisplay');
+            if (val === 'master') {
+                userEl.textContent = 'diretoria@omnievo.com.br';
+                showDashToast('Perfil Master Ativo', 'Acesso irrestrito a margens, aprovações e faturamento consolidado.');
+            } else {
+                userEl.textContent = 'gabriel.santos@omnievo.com.br';
+                showDashToast('Perfil Consultor Ativo', 'Foco em emissão rápida e carteira regional.');
+            }
+        }
+
+        function resetarDadosDemo() {
+            showDashToast('Dados Restaurados', 'Base de dados de demonstração resetada para o padrão.');
+            setTimeout(() => location.reload(), 600);
+        }
+
+        function showDashToast(title, msg) {
+            const toast = document.getElementById('dashToast');
+            document.getElementById('dashToastTitle').textContent = title;
+            document.getElementById('dashToastMsg').textContent = msg;
+            toast.classList.remove('translate-y-[-100px]', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-[-100px]', 'opacity-0');
+            }, 3000);
+        }
+
+        function filterOrders(query) {
+            const q = query.toLowerCase();
+            const rows = document.querySelectorAll('#ordersTableBody tr');
+            rows.forEach(r => {
+                const text = r.textContent.toLowerCase();
+                r.style.display = text.includes(q) ? '' : 'none';
+            });
+        }
+
+        function gerarPDF(codigo, cliente, valor) {
+            currentPdfData = { num: codigo, cliente: cliente, valor: valor };
+            document.getElementById('pdfPedidoNum').textContent = codigo;
+            document.getElementById('pdfClienteNome').textContent = cliente;
+            document.getElementById('pdfTotalValor').textContent = valor;
+            document.getElementById('pdfModal').classList.remove('hidden');
+        }
+
+        function closePdfModal() {
+            document.getElementById('pdfModal').classList.add('hidden');
+        }
+
+        function compartilharWhatsApp() {
+            const msg = `*OMNIEVO — Espelho de Pedido Executivo B2B*\n\n*Pedido:* ${currentPdfData.num}\n*Cliente:* ${currentPdfData.cliente}\n*Valor Total:* ${currentPdfData.valor}\n*Status:* 60 - Faturado e Integrado ao Omie ERP\n\n_Documento gerado automaticamente pelo Omnievo CRM._`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function openNovoPedidoModal() {
+            document.getElementById('novoPedidoModal').classList.remove('hidden');
+        }
+
+        function closeNovoPedidoModal() {
+            document.getElementById('novoPedidoModal').classList.add('hidden');
+        }
+
+        function atualizarPrecoProduto(val) {
+            const num = parseFloat(val);
+            document.getElementById('novoValor').value = num.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        }
+
+        function adicionarNovoPedido(e) {
+            e.preventDefault();
+            const cliente = document.getElementById('novoCliente').value;
+            const selectProd = document.getElementById('novoProdutoSelect');
+            const valor = document.getElementById('novoValor').value;
+            const newCode = '#PED-' + Math.floor(9850 + Math.random() * 50);
+            const btn = document.getElementById('btnEmitirPedidoModal');
+
+            btn.disabled = true;
+            btn.innerHTML = `<span class="inline-block animate-spin mr-2">🔄</span> Transmitindo ao Omie ERP...`;
+
+            setTimeout(() => {
+                const tbody = document.getElementById('ordersTableBody');
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-900/40 transition bg-emerald-950/20';
+                tr.innerHTML = `
+                    <td class="py-3.5 font-mono text-emerald-300 font-bold">${newCode}</td>
+                    <td class="py-3.5 font-bold text-slate-200">${cliente}</td>
+                    <td class="py-3.5 font-mono text-slate-400">SP</td>
+                    <td class="py-3.5 font-bold text-emerald-400">R$ ${valor}</td>
+                    <td class="py-3.5">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            60 - Faturado Omie (0.4s)
+                        </span>
+                    </td>
+                    <td class="py-3.5 text-slate-300">Gabriel Santos</td>
+                    <td class="py-3.5 text-right">
+                        <button onclick="gerarPDF('${newCode}', '${cliente}', 'R$ ${valor}')" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg transition font-mono text-[11px]">
+                            📄 Espelho PDF
+                        </button>
+                    </td>
+                `;
+                tbody.insertBefore(tr, tbody.firstChild);
+
+                btn.disabled = false;
+                btn.innerHTML = `<span>🚀 Transmitir ao Omie ERP em 0.4s</span>`;
+                closeNovoPedidoModal();
+
+                showDashToast('Pedido Gravado no Omie!', `${newCode} de ${cliente} gravado com sucesso em 0.4s.`);
+                
+                // Atualizar badge
+                const badge = document.getElementById('badgeTotalPedidos');
+                if (badge) {
+                    badge.textContent = parseInt(badge.textContent || '10') + 1;
+                }
+            }, 600);
+        }
+    </script>
+</body>
+</html>
